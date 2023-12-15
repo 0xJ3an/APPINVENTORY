@@ -1,7 +1,10 @@
 package com.example.application.views.detailsale;
 
 import com.example.application.views.MainLayout;
+import com.example.application.views.cambio.CambioView;
+import com.example.application.views.products.ProductsView;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
@@ -17,11 +20,18 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
+
 @PageTitle("DetailSale")
 @Route(value = "my-view3", layout = MainLayout.class)
 @Uses(Icon.class)
 public class DetailSaleView extends Composite<VerticalLayout> {
-
+    private Double cantidad1;
+    private Double cantidad2;
+    private Double cantidad3;
+    private Double cantidad4;
     public DetailSaleView() {
         H1 h1 = new H1();
         HorizontalLayout layoutRow = new HorizontalLayout();
@@ -475,5 +485,73 @@ public class DetailSaleView extends Composite<VerticalLayout> {
         layoutRow29.add(layoutRow30);
         layoutRow30.add(buttonPrimary);
         layoutRow29.add(buttonPrimary2);
+
+        UI ui = UI.getCurrent();
+        cantidad1 = (Double) ui.getSession().getAttribute("cantidad1");
+        cantidad2 = (Double) ui.getSession().getAttribute("cantidad2");
+        cantidad3 = (Double) ui.getSession().getAttribute("cantidad3");
+        cantidad4 = (Double) ui.getSession().getAttribute("cantidad4");
+
+        // Calcular los totales y configurar los valores en tus componentes (h37, h38, h39, h310)
+        double precioUnitarioAceiteOliva = 15.0;  // Reemplaza con el precio real
+        double precioUnitarioLecheVaca = 2.5;     // Reemplaza con el precio real
+        double precioUnitarioAtunLata = 2;      // Reemplaza con el precio real
+        double precioUnitarioHuevos = 3.5;        // Reemplaza con el precio real
+        double iva = 0.12;                        // Porcentaje de IVA
+        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(Locale.US);
+        numberFormat.setMaximumFractionDigits(2);
+        numberFormat.setMinimumFractionDigits(2);
+
+        h37.setText(cantidad1.toString());
+        h38.setText("$15");
+        h39.setText(numberFormat.format(15 * (1 + iva)));
+        // Calcular totales para Aceite Oliva
+        double totalAceiteOliva = cantidad1 * precioUnitarioAceiteOliva;
+        double totalAceiteOlivaIva = totalAceiteOliva * (1 + iva);
+        h310.setText(numberFormat.format(totalAceiteOlivaIva));
+
+        h312.setText(cantidad2.toString());
+        h313.setText("$2.50");
+        h314.setText(numberFormat.format(2.50*(1+iva)));
+        // Calcular totales para Leche de Vaca
+        double totalLecheVaca = cantidad2 * precioUnitarioLecheVaca;
+        double totalLecheVacaIva = totalLecheVaca * (1 + iva);
+        h315.setText(numberFormat.format(totalLecheVacaIva));
+        h317.setText(cantidad3.toString());
+        h318.setText("$2");
+        h319.setText(numberFormat.format(2*(1+iva)));
+        // Calcular totales para Atún en lata
+        double totalAtunLata = cantidad3 * precioUnitarioAtunLata;
+        double totalAtunLataIva = totalAtunLata * (1 + iva);
+        h320.setText(numberFormat.format(totalAtunLataIva));
+        h322.setText(cantidad4.toString());
+        h323.setText("$3.50");
+        h324.setText(numberFormat.format(3.50*(1+iva)));
+        // Calcular totales para Huevos
+        double totalHuevos = cantidad4 * precioUnitarioHuevos;
+        double totalHuevosIva = totalHuevos * (1 + iva);
+        h325.setText(numberFormat.format(totalHuevosIva));
+
+        // Calcular totales generales
+        double totalGeneral = totalAceiteOlivaIva + totalLecheVacaIva + totalAtunLataIva + totalHuevosIva;
+        h327.setText(numberFormat.format(totalGeneral));
+
+        buttonPrimary.addClickListener(event -> {
+            // Regresar a la vista anterior
+            UI.getCurrent().navigate(ProductsView.class);
+        });
+
+        buttonPrimary2.addClickListener(event -> {
+            // Guardar el valor total en la sesión
+
+            UI.getCurrent().getSession().setAttribute("totalGeneral", totalGeneral);
+
+            // Ir a la siguiente vista
+            UI.getCurrent().navigate(CambioView.class);
+        });
     }
+
+
+
+
 }

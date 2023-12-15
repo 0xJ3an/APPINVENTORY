@@ -1,6 +1,7 @@
 package com.example.application.views.products;
 
 import com.example.application.views.MainLayout;
+import com.example.application.views.detailsale.DetailSaleView;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -8,6 +9,7 @@ import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
@@ -227,5 +229,46 @@ public class ProductsView extends Composite<VerticalLayout> {
         layoutRow13.add(buttonPrimary);
         layoutRow13.add(layoutRow14);
         layoutRow14.add(buttonPrimary2);
+
+
+        buttonPrimary.addClickListener(buttonClickEvent -> {numberField.clear();
+            numberField2.clear();
+            numberField3.clear();
+            numberField4.clear();});
+        buttonPrimary2.addClickListener(buttonClickEvent -> {
+            if (!isNumeroEnteroPositivo(numberField.getValue())
+                    || !isNumeroEnteroPositivo(numberField2.getValue())
+                    || !isNumeroEnteroPositivo(numberField3.getValue())
+                    || !isNumeroEnteroPositivo(numberField4.getValue())) {
+                Notification.show("Por favor, ingrese cantidades válidas en todos los campos", 3000, Notification.Position.MIDDLE);
+            } else {
+                Double cantidad1 = numberField.getValue();
+                Double cantidad2 = numberField2.getValue();
+                Double cantidad3 = numberField3.getValue();
+                Double cantidad4 = numberField4.getValue();
+
+                // Aquí puedes agregar lógica adicional antes de redirigir a la otra vista
+                // Por ejemplo, puedes guardar los valores ingresados o realizar otras operaciones.
+
+                // Redirigir a la otra vista
+                getUI().ifPresent(ui -> {ui.getSession().setAttribute("cantidad1", cantidad1);
+                    ui.getSession().setAttribute("cantidad2", cantidad2);
+                    ui.getSession().setAttribute("cantidad3", cantidad3);
+                    ui.getSession().setAttribute("cantidad4", cantidad4);
+                    ui.navigate(DetailSaleView.class);
+                });
+            }
+        });
+        // ... (resto del código)
     }
+
+
+
+
+
+
+    private boolean isNumeroEnteroPositivo(Double value) {
+        return value != null && value >= 0 && value.intValue() == value.doubleValue();
+    }
+
 }

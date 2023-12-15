@@ -1,12 +1,16 @@
 package com.example.application.views.cambio;
 
 import com.example.application.views.MainLayout;
+import com.example.application.views.detailsale.DetailSaleView;
+import com.example.application.views.products.ProductsView;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
@@ -16,6 +20,9 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 @PageTitle("Cambio")
 @Route(value = "my-view4", layout = MainLayout.class)
@@ -150,5 +157,46 @@ public class CambioView extends Composite<VerticalLayout> {
         layoutRow8.add(layoutRow10);
         layoutRow8.add(layoutRow9);
         layoutRow9.add(buttonPrimary2);
+
+        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(Locale.US);
+        numberFormat.setMaximumFractionDigits(2);
+        numberFormat.setMinimumFractionDigits(2);
+
+        Double totalAPagar = (Double) UI.getCurrent().getSession().getAttribute("totalGeneral");
+        h32.setText(numberFormat.format(totalAPagar));
+        buttonPrimary.addClickListener(buttonClickEvent -> {
+            UI.getCurrent().navigate(DetailSaleView.class);
+        });
+        buttonPrimary2.addClickListener(event -> {
+            try {
+
+
+                // Obtener el monto ingresado
+                double montoIngresado = numberField.getValue();
+
+                // Validaciones
+                if (montoIngresado <= 0) {
+                    Notification.show("El monto ingresado debe ser mayor a cero", 3000, Notification.Position.TOP_CENTER);
+                    return;
+                }
+
+                if (montoIngresado < totalAPagar) {
+                    Notification.show("El monto ingresado no puede ser menor al total a pagar", 3000, Notification.Position.TOP_CENTER);
+                    return;
+                }
+
+                // Calcular el cambio
+                double cambio = montoIngresado - totalAPagar;
+
+                // Mostrar resultados
+                //h32.setText(String.valueOf(totalAPagar)); // Total a pagar
+                h35.setText(numberFormat.format(cambio)); // Cambio
+
+            } catch (Exception e) {
+                Notification.show("Error al realizar el cálculo", 3000, Notification.Position.TOP_CENTER);
+            }
+        });
     }
+
+
 }
